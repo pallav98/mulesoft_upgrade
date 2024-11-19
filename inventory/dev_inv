@@ -1,0 +1,2 @@
+[mulesoft_servers]
+dev001 ansible_host=dev001 ansible_user=username

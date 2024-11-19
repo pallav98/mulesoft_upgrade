@@ -1,0 +1,5 @@
+---
+- name: Start runtime service
+  command: ./mule start
+  args:
+    chdir: "{{ runtime_dir }}/{{ service_name }}/bin/"

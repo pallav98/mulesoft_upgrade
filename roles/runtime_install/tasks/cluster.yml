@@ -1,0 +1,10 @@
+---
+- name: Create cluster on server1
+  command: ./amc_setup -H ae522bd6-3e40-4f37-98f5-8edf9bfefc5c---850322 dwlvs01mula001
+  args:
+    chdir: "{{ runtime_dir }}/{{ service_name }}/bin/"
+
+- name: Create cluster on server2
+  command: ./amc_setup -H ae522bd6-3e40-4f37-98f5-8edf9bfefc5c---850322 dwlvs01mula002
+  args:
+    chdir: "{{ runtime_dir }}/{{ service_name }}/bin/"

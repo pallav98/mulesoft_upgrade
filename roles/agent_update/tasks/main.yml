@@ -1,0 +1,4 @@
+---
+- include: update_agent.yml
+- include: verify_agent.yml
+- include: cleanup.yml

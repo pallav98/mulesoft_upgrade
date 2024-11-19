@@ -1,0 +1,40 @@
+## Ansible playbook to automate the upgrade of MuleSoft runtime and agent
+```
+mulesoft_upgrade/
+├── group_vars/
+│   └── all.yml                  # Group-wide variables
+├── host_vars/                   # Host-specific variables (if needed)
+├── inventory/
+│   └── dev_inv                  # Inventory file defining target servers
+├── playbooks/
+│   └── upgrade_mulesoft_runtime.yml  # Main playbook for the upgrade
+├── roles/
+│   ├── runtime_install/
+│   │   ├── tasks/
+│   │   │   ├── main.yml         # Includes runtime installation tasks
+│   │   │   ├── setup.yml        # Binary extraction and setup
+│   │   │   ├── license.yml      # License installation and verification
+│   │   │   ├── cluster.yml      # Clustering configuration
+│   │   │   └── start_runtime.yml # Start the runtime
+│   │   ├── handlers/
+│   │   │   └── main.yml         # Handlers for runtime tasks
+│   │   ├── templates/           # Templates for configuration
+│   │   ├── files/               # Binary or configuration files
+│   │   └── vars/                # Role-specific variables
+│   └── agent_update/
+│       ├── tasks/
+│       │   ├── main.yml         # Includes agent update tasks
+│       │   ├── update_agent.yml # Updating the agent
+│       │   ├── verify_agent.yml # Verifying the agent update
+│       │   └── cleanup.yml      # Cleaning up old files
+│       ├── handlers/
+│       │   └── main.yml         # Handlers for agent update tasks
+│       ├── templates/           # Templates for agent configuration
+│       ├── files/               # Agent setup files
+│       └── vars/                # Role-specific variables
+└── ansible.cfg                  # Ansible configuration file
+```
+
+
+```ansible-playbook -i inventory/dev_inv playbooks/upgrade_mulesoft_runtime.yml ```
+

@@ -1,0 +1,7 @@
+---
+- name: Upgrade MuleSoft Runtime and Agent
+  hosts: mulesoft_servers
+  become: yes
+  roles:
+    - runtime_install
+    - agent_update

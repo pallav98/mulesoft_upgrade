@@ -1,0 +1,15 @@
+---
+- name: Copy runtime binary to Mule home
+  copy:
+    src: "{{ backup_dir }}/runtime_binary/{{ runtime_binary }}"
+    dest: "{{ runtime_dir }}/"
+    owner: mule
+    mode: '0644'
+
+- name: Extract runtime binary
+  command: tar -xvzf {{ runtime_dir }}/{{ runtime_binary }}
+  args:
+    chdir: "{{ runtime_dir }}"
+
+- name: Rename extracted folder
+  command: mv {{ runtime_dir }}/mule-enterprise-standalone-{{ runtime_version }}* {{ runtime_dir }}/{{ service_name }}
