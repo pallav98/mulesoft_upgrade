@@ -1,9 +1,10 @@
-mulesoft_base_dir: "/apps/mulesoft"
-backup_dir: "/apps/mulesoft/backup/scaling_binary_setup_file"
-runtime_binary: "mule-ee-distribution-standalone-4.3.0-20210119.tar.gz"
 runtime_version: "4.3.0"
-runtime_dir: "{{ mulesoft_base_dir }}/runtime/{{ runtime_version }}"
-service_name: "teller-services"
-license_file: "license.lic"
+mule_home: "/apps/mulesoft/runtime/{{ runtime_version }}"
+binary_path: "/apps/mulesoft/backup/scaling_binary_setup_file/runtime_binary"
+license_path: "/apps/mulesoft/backup/scaling_binary_setup_file/non_prod_license"
 agent_version: "2.4.26"
-old_agent_version: "2.4.14"
+cluster_id: "ae522bd6-3e40-4f37-98f5-8edf9bfefc5c"
+
+# MuleSoft credentials
+mulesoft_user: "mulesoft_support_username"
+mulesoft_password: "mulesoft_support_password"

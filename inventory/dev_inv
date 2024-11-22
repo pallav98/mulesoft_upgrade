@@ -1,2 +1,14 @@
-[mulesoft_servers]
-dev001 ansible_host=dev001 ansible_user=username
+[teller-services]
+teller-server1 ansible_host=192.168.1.101
+teller-server2 ansible_host=192.168.1.102
+teller-server3 ansible_host=192.168.1.103
+
+[acbs-services]
+acbs-server1 ansible_host=192.168.1.201
+acbs-server2 ansible_host=192.168.1.202
+acbs-server3 ansible_host=192.168.1.203
+
+[digital-services]
+digital-server1 ansible_host=192.168.1.301
+digital-server2 ansible_host=192.168.1.302
+digital-server3 ansible_host=192.168.1.303

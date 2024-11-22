@@ -2,16 +2,16 @@
 - name: Copy license file
   copy:
     src: "{{ backup_dir }}/non_prod_license/{{ license_file }}"
-    dest: "{{ runtime_dir }}/{{ service_name }}/bin/"
+    dest: "{{ runtime_dir }}/{{ business_group }}/bin/"
     owner: mule
     mode: '0644'
 
 - name: Install the license
-  command: ./mule -installLicense {{ runtime_dir }}/{{ service_name }}/bin/{{ license_file }}
+  command: ./mule -installLicense {{ runtime_dir }}/{{ business_group }}/bin/{{ license_file }}
   args:
-    chdir: "{{ runtime_dir }}/{{ service_name }}/bin/"
+    chdir: "{{ runtime_dir }}/{{ business_group }}/bin/"
 
 - name: Verify the license
-  command: ./mule -verifyLicense {{ runtime_dir }}/{{ service_name }}/bin/{{ license_file }}
+  command: ./mule -verifyLicense {{ runtime_dir }}/{{ business_group }}/bin/{{ license_file }}
   args:
-    chdir: "{{ runtime_dir }}/{{ service_name }}/bin/"
+    chdir: "{{ runtime_dir }}/{{ business_group }}/bin/"

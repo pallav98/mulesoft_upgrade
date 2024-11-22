@@ -2,7 +2,7 @@
 - name: Start runtime
   command: ./mule start
   args:
-    chdir: "{{ runtime_dir }}/{{ service_name }}/bin/"
+    chdir: "{{ runtime_dir }}/{{ business_group }}/bin/"
 
 - name: Check agent version
-  shell: cat {{ runtime_dir }}/{{ service_name }}/logs/mule_agent.log | grep "{{ agent_version }}"
+  shell: cat {{ runtime_dir }}/{{ business_group }}/logs/mule_agent.log | grep "{{ agent_version }}"

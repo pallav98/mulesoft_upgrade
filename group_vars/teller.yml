@@ -1,0 +1,4 @@
+business_group: "teller-services"
+runtime_version: "4.3.0"
+license_file: "/apps/mulesoft/backup/scaling_binary_setup_file/non_prod_license/license.lic"
+agent_version: "2.4.26"

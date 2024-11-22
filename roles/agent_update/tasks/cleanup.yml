@@ -1,5 +1,5 @@
 ---
 - name: Remove old agent jar
   file:
-    path: "{{ runtime_dir }}/{{ service_name }}/tools/agent-setup-{{ old_agent_version }}-amc-final.jar"
+    path: "{{ runtime_dir }}/{{ business_group }}/tools/agent-setup-{{ old_agent_version }}-amc-final.jar"
     state: absent

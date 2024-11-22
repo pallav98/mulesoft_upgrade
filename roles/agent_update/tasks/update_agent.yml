@@ -2,18 +2,18 @@
 - name: Stop runtime
   command: ./mule stop
   args:
-    chdir: "{{ runtime_dir }}/{{ service_name }}/bin/"
+    chdir: "{{ runtime_dir }}/{{ business_group }}/bin/"
 
 - name: Copy agent setup files
   copy:
     src: "{{ backup_dir }}/agent-setup-{{ agent_version }}/*"
-    dest: "{{ runtime_dir }}/{{ service_name }}/bin/"
+    dest: "{{ runtime_dir }}/{{ business_group }}/bin/"
     owner: mule
     mode: '0755'
 
 - name: Change permissions
   file:
-    path: "{{ runtime_dir }}/{{ service_name }}/bin/{{ item }}"
+    path: "{{ runtime_dir }}/{{ business_group }}/bin/{{ item }}"
     mode: '0755'
   loop:
     - amc_setup.bat
@@ -24,4 +24,4 @@
 - name: Upgrade agent
   command: ./amc setup -U
   args:
-    chdir: "{{ runtime_dir }}/{{ service_name }}/bin/"
+    chdir: "{{ runtime_dir }}/{{ business_group }}/bin/"

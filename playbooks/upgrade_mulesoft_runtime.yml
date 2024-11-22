@@ -1,7 +1,8 @@
----
-- name: Upgrade MuleSoft Runtime and Agent
-  hosts: mulesoft_servers
+- name: Upgrade MuleSoft Runtime
+  hosts: all
   become: yes
+  vars:
+    business_group: "{{ business_group }}"
   roles:
-    - runtime_install
-    - agent_update
+    - role: runtime_install
+    - role: agent_update
