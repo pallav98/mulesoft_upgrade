@@ -1,12 +1,11 @@
 ## Ansible playbook to automate the upgrade of MuleSoft runtime and agent
 
 Run the playbook with a specific business group:
-```
-ansible-playbook -i inventory/dev_inv playbooks/upgrade_mulesoft_runtime.yml --extra-vars "business_group=teller-services"
-```
 
-```
-mulesoft_upgrade/
+``` ansible-playbook -i inventory/dev_inv playbooks/upgrade_mulesoft_runtime.yml --extra-vars "business_group=teller-services" ```
+
+
+```mulesoft_upgrade/
 ├── group_vars/
 │   └── all.yml                  # Group-wide variables
 ├── host_vars/                   # Host-specific variables (if needed)
@@ -38,6 +37,5 @@ mulesoft_upgrade/
 │       ├── templates/           # Templates for agent configuration
 │       ├── files/               # Agent setup files
 │       └── vars/                # Role-specific variables
-└── ansible.cfg                  # Ansible configuration file
-```
+└── ansible.cfg                  # Ansible configuration file ```
 
