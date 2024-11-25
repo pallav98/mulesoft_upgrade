@@ -1,8 +1,8 @@
----
-- name: Start runtime
-  command: ./mule start
-  args:
-    chdir: "{{ runtime_dir }}/{{ business_group }}/bin/"
+# ---
+# - name: Start runtime
+#   command: ./mule start
+#   args:
+#     chdir: "{{ runtime_dir }}/{{ business_group }}/bin/"
 
-- name: Check agent version
-  shell: cat {{ runtime_dir }}/{{ business_group }}/logs/mule_agent.log | grep "{{ agent_version }}"
+# - name: Check agent version
+#   shell: cat {{ runtime_dir }}/{{ business_group }}/logs/mule_agent.log | grep "{{ agent_version }}"

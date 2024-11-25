@@ -1,10 +1,10 @@
----
-- name: Create cluster on server1
-  command: ./amc_setup -H {{ cluster_id }} dwlvs01mula001
-  args:
-    chdir: "{{ runtime_dir }}/{{ business_group }}/bin/"
+# ---
+# - name: Create cluster on server1
+#   command: ./amc_setup -H {{ cluster_id }} dwlvs01mula001
+#   args:
+#     chdir: "{{ runtime_dir }}/{{ business_group }}/bin/"
 
-- name: Create cluster on server2
-  command: ./amc_setup -H {{ cluster_id }} dwlvs01mula002
-  args:
-    chdir: "{{ runtime_dir }}/{{ business_group }}/bin/"
+# - name: Create cluster on server2
+#   command: ./amc_setup -H {{ cluster_id }} dwlvs01mula002
+#   args:
+#     chdir: "{{ runtime_dir }}/{{ business_group }}/bin/"

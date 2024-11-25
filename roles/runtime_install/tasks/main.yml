@@ -1,5 +1,37 @@
 ---
-- include: setup.yml
-- include: license.yml
-- include: cluster.yml
-- include: start_runtime.yml
+- name: Ensure the runtime directory exists for {{ business_group }}
+  file:
+    path: "/apps/mulesoft/runtime/{{ business_group }}/"
+    state: directory
+    mode: '0755'
+
+- name: Download MuleSoft Runtime binary
+  get_url:
+    url: "https://help.mulesoft.com/s/downloads/runtime_binary.tar.gz"  
+    dest: "/apps/mulesoft/runtime/{{ business_group }}/mule-runtime.tar.gz"
+    headers:
+      Authorization: "Basic {{ mulesoft_credentials }}"
+
+- name: Extract runtime binary
+  unarchive:
+    src: "/apps/mulesoft/runtime/{{ business_group }}/mule-runtime.tar.gz"
+    dest: "/apps/mulesoft/runtime/{{ business_group }}/"
+    remote_src: yes
+
+- name: Rename extracted directory
+  command: mv /apps/mulesoft/runtime/{{ business_group }}/mule-enterprise-standalone-* /apps/mulesoft/runtime/{{ business_group }}/{{ business_group }}
+
+- name: Copy license file for {{ business_group }}
+  copy:
+    src: "/apps/mulesoft/backup/scaling_binary_setup_file/non_prod_license/license.lic"
+    dest: "/apps/mulesoft/runtime/{{ business_group }}/{{ business_group }}/bin/license.lic"
+
+- name: Install license for {{ business_group }}
+  command: >
+    /apps/mulesoft/runtime/{{ business_group }}/{{ business_group }}/bin/mule
+    -installLicense
+    /apps/mulesoft/runtime/{{ business_group }}/{{ business_group }}/bin/license.lic
+
+- name: Start runtime for {{ business_group }}
+  command: >
+    /apps/mulesoft/runtime/{{ business_group }}/{{ business_group }}/bin/mule start

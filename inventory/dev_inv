@@ -1,14 +1,14 @@
-[teller-services]
-teller-server1 ansible_host=192.168.1.101
-teller-server2 ansible_host=192.168.1.102
-teller-server3 ansible_host=192.168.1.103
+[external_services]
+external-01 ansible_host=192.168.1.11
+external-02 ansible_host=192.168.1.12
+external-03 ansible_host=192.168.1.13
 
-[acbs-services]
-acbs-server1 ansible_host=192.168.1.201
-acbs-server2 ansible_host=192.168.1.202
-acbs-server3 ansible_host=192.168.1.203
+[internal_services]
+internal-01 ansible_host=192.168.1.21
+internal-02 ansible_host=192.168.1.22
+internal-03 ansible_host=192.168.1.23
 
-[digital-services]
-digital-server1 ansible_host=192.168.1.301
-digital-server2 ansible_host=192.168.1.302
-digital-server3 ansible_host=192.168.1.303
+[loan_services]
+loan-01 ansible_host=192.168.1.31
+loan-02 ansible_host=192.168.1.32
+loan-03 ansible_host=192.168.1.33

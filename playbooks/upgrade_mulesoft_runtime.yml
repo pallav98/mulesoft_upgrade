@@ -1,8 +1,21 @@
-- name: Upgrade MuleSoft Runtime
+---
+- name: Upgrade MuleSoft Runtime and Agent
   hosts: all
   become: yes
   vars:
-    business_group: "{{ business_group }}"
-  roles:
-    - role: runtime_install
-    - role: agent_update
+    runtime_version: "{{ default_runtime_version }}"
+    agent_version: "{{ default_agent_version }}"
+  tasks:
+    - name: Upgrade runtime and agent for each business group
+      include_role:
+        name: runtime_install
+      with_items: "{{ business_groups }}"
+      loop_control:
+        loop_var: business_group
+
+    - name: Update agent for each business group
+      include_role:
+        name: agent_update
+      with_items: "{{ business_groups }}"
+      loop_control:
+        loop_var: business_group

@@ -1,4 +1,25 @@
 ---
-- include: update_agent.yml
-- include: verify_agent.yml
-- include: cleanup.yml
+- name: Stop runtime for {{ business_group }}
+  command: >
+    /apps/mulesoft/runtime/{{ business_group }}/{{ business_group }}/bin/mule stop
+
+- name: Download Agent Setup for {{ business_group }}
+  get_url:
+    url: "https://help.mulesoft.com/s/downloads/agent-setup.tar.gz"  
+    dest: "/apps/mulesoft/runtime/{{ business_group }}/{{ business_group }}/bin/agent-setup.tar.gz"
+    headers:
+      Authorization: "Basic {{ mulesoft_credentials }}"
+
+- name: Extract Agent Setup
+  unarchive:
+    src: "/apps/mulesoft/runtime/{{ business_group }}/{{ business_group }}/bin/agent-setup.tar.gz"
+    dest: "/apps/mulesoft/runtime/{{ business_group }}/{{ business_group }}/bin/"
+    remote_src: yes
+
+- name: Update Agent for {{ business_group }}
+  command: >
+    /apps/mulesoft/runtime/{{ business_group }}/{{ business_group }}/bin/amc_setup -U
+
+- name: Start runtime for {{ business_group }}
+  command: >
+    /apps/mulesoft/runtime/{{ business_group }}/{{ business_group }}/bin/mule start
