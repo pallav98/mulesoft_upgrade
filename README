@@ -1,41 +1,28 @@
 ## Ansible playbook to automate the upgrade of MuleSoft runtime and agent
 
 Run the playbook with a specific business group:
-ansible-playbook -i inventory/dev_inv playbooks/upgrade_mulesoft_runtime.yml --extra-vars "business_group=teller-services"
+ansible-playbook -i inventory/dev_inv playbooks/upgrade_mulesoft_runtime.yml
+
 
 ```
 mulesoft_upgrade/
 ├── group_vars/
-│   └── all.yml                  # Group-wide variables
-├── host_vars/                   # Host-specific variables (if needed)
+|   |__ all.yml
+│   ├── external_services.yml
+│   ├── internal_services.yml
+│   └── loan_services.yml
 ├── inventory/
-│   └── dev_inv                  # Inventory file defining target servers
+│   └── dev_inv
 ├── playbooks/
-│   └── upgrade_mulesoft_runtime.yml  # Main playbook for the upgrade
+│   └── upgrade_mulesoft_runtime.yml
 ├── roles/
 │   ├── runtime_install/
 │   │   ├── tasks/
-│   │   │   ├── main.yml         # Includes runtime installation tasks
-│   │   │   ├── setup.yml        # Binary extraction and setup
-│   │   │   ├── license.yml      # License installation and verification
-│   │   │   ├── cluster.yml      # Clustering configuration
-│   │   │   └── start_runtime.yml # Start the runtime
-│   │   ├── handlers/
-│   │   │   └── main.yml         # Handlers for runtime tasks
-│   │   ├── templates/           # Templates for configuration
-│   │   ├── files/               # Binary or configuration files
-│   │   └── vars/                # Role-specific variables
+│   │   │   └── main.yml
 │   └── agent_update/
 │       ├── tasks/
-│       │   ├── main.yml         # Includes agent update tasks
-│       │   ├── update_agent.yml # Updating the agent
-│       │   ├── verify_agent.yml # Verifying the agent update
-│       │   └── cleanup.yml      # Cleaning up old files
-│       ├── handlers/
-│       │   └── main.yml         # Handlers for agent update tasks
-│       ├── templates/           # Templates for agent configuration
-│       ├── files/               # Agent setup files
-│       └── vars/                # Role-specific variables
-└── ansible.cfg                  # Ansible configuration file
+│       │   └── main.yml
+└── ansible.cfg
+
 ```
 
