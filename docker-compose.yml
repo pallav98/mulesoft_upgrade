@@ -1,0 +1,39 @@
+version: '3.8'
+
+networks:
+  ansible_network:
+    driver: bridge
+
+services:
+  external_services:
+    image: ubuntu:latest
+    container_name: external_services
+    networks:
+      - ansible_network
+    ports:
+      - "2221:22"
+    command: /bin/bash -c "apt-get update && apt-get install -y openssh-server sudo && echo 'root:root' | chpasswd && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && service ssh restart && service ssh status && sleep infinity"
+    environment:
+      - TZ=UTC
+
+  internal_services:
+    image: ubuntu:latest
+    container_name: internal_services
+    networks:
+      - ansible_network
+    ports:
+      - "2222:22"
+    command: /bin/bash -c "apt-get update && apt-get install -y openssh-server sudo && echo 'root:root' | chpasswd && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && service ssh restart && sleep infinity"
+    environment:
+      - TZ=UTC
+
+  loan_services:
+    image: ubuntu:latest
+    container_name: loan_services
+    networks:
+      - ansible_network
+    ports:
+      - "2223:22"
+    command: /bin/bash -c "apt-get update && apt-get install -y openssh-server sudo && echo 'root:root' | chpasswd && sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config && sed -i 's/#PasswordAuthentication yes/PasswordAuthentication yes/' /etc/ssh/sshd_config && service ssh restart && sleep infinity"
+    environment:
+      - TZ=UTC

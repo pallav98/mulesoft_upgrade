@@ -6,6 +6,4 @@ agent_version: "2.4.26"
 cluster_id: "ae522bd6-3e40-4f37-98f5-8edf9bfefc5c"
 
 # MuleSoft credentials
-# mulesoft_user: "mulesoft_support_username"
-# mulesoft_password: "mulesoft_support_password"
-mulesoft_credentials: "username:password" 
+mulesoft_credentials: "username:password"

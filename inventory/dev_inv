@@ -1,14 +1,31 @@
-[external_services]
-external-01 ansible_host=192.168.1.11
-external-02 ansible_host=192.168.1.12
-external-03 ansible_host=192.168.1.13
-
-[internal_services]
-internal-01 ansible_host=192.168.1.21
-internal-02 ansible_host=192.168.1.22
-internal-03 ansible_host=192.168.1.23
-
-[loan_services]
-loan-01 ansible_host=192.168.1.31
-loan-02 ansible_host=192.168.1.32
-loan-03 ansible_host=192.168.1.33
+all:
+  hosts:
+    server1:
+      ansible_host: localhost
+      ansible_ssh_user: root
+      ansible_ssh_pass: root
+      ansible_ssh_port: 2221
+      business_groups:
+        - external_services
+        - digital_services
+        - teller_services
+        - acbs_services
+    server2:
+      ansible_host: localhost
+      ansible_ssh_user: root
+      ansible_ssh_pass: root
+      ansible_ssh_port: 2222
+      business_groups:
+        - internal_services
+        - commercial_services
+        - insurance_services
+        - image_center_services
+    server3:
+      ansible_host: localhost
+      ansible_ssh_user: root
+      ansible_ssh_pass: root
+      ansible_ssh_port: 2223
+      business_groups:
+        - loan_services
+        - deposit_services
+        - customer_services
