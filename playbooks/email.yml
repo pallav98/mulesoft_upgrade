@@ -1,0 +1,11 @@
+tasks:
+  - name: Send Email Notification - Service Starting
+    mail:
+      host: "{{ wintrust_smtp }}"
+      port: "{{ wintrust_smtp_port }}"
+      from: "{{ sender_email }}"
+      subject: "{{ mail_subject_start }} - {{ business_group }} on {{ hostname }}"
+      to: "{{ mail_recipients }}"
+      secure: never
+      body: "The systemd service {{ business_group }} on host {{ hostname }} is starting."
+    delegate_to: localhost
