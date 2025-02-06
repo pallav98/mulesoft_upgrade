@@ -1,11 +1,28 @@
-tasks:
-  - name: Send Email Notification - Service Starting
-    mail:
-      host: "{{ wintrust_smtp }}"
-      port: "{{ wintrust_smtp_port }}"
-      from: "{{ sender_email }}"
-      subject: "{{ mail_subject_start }} - {{ business_group }} on {{ hostname }}"
-      to: "{{ mail_recipients }}"
-      secure: never
-      body: "The systemd service {{ business_group }} on host {{ hostname }} is starting."
-    delegate_to: localhost
+- name: Stop runtime for Mulesoft
+  hosts: "{{ hostname_bg.split('_')[0] }}"
+  become: yes
+  tasks:  
+    - name: Split the variable into hostname and business group
+      set_fact:
+        business_group: "{{ hostname_bg.split('_')[1] }}"
+
+    - name: Send Email Notification - Service {{ operation }}
+      mail:
+        host: "{{ wintrust_smtp }}"
+        port: "{{ wintrust_smtp_port }}"
+        from: "{{ sender_email }}"
+        subject: "Service {{ operation }} - {{ business_group }} on {{ ansible_hostname }}"
+        to: "{{ mail_recipients }}"
+        secure: never
+        body: "The systemd service {{ business_group }} on host {{ ansible_hostname }} is {{ operation }} at {{ lookup('pipe', 'date +%Y-%m-%d_%H-%M-%S') }}."
+      delegate_to: localhost
+
+    - name: Runtime for {{ business_group }} {{ operation }}
+      ansible.builtin.systemd_service:
+        state: "{{ operation }}"
+        name: "mule.{{ business_group }}"
+      register: service_status
+
+    - name: Status of the {{ business_group }}
+      debug: 
+        msg: "{{ service_status }}"
