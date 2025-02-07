@@ -1,26 +1,47 @@
-- name: Stop runtime for Mulesoft
-  hosts: "{{ hostname_bg.split('_')[0] }}"
+- name: Manage Mulesoft Runtime Service
+  hosts: "{{ hostname_bg.split('_')[1] }}"
   become: yes
-  tasks:  
+  tasks:
     - name: Split the variable into hostname and business group
       set_fact:
-        business_group: "{{ hostname_bg.split('_')[1] }}"
+        business_group: "{{ hostname_bg.split('_')[2] }}"
 
-    - name: Send Email Notification - Service {{ operation }}
-      mail:
+    - name: Send email notification
+      mail: 
         host: "{{ wintrust_smtp }}"
         port: "{{ wintrust_smtp_port }}"
         from: "{{ sender_email }}"
-        subject: "Service {{ operation }} - {{ business_group }} on {{ ansible_hostname }}"
         to: "{{ mail_recipients }}"
+        subject: "Mulesoft runtime service mule.{{ business_group }} {{ operation }} on {{ hostname_bg.split('_')[0] }} {{ hostname_bg.split('_')[1] }}"
         secure: never
-        body: "The systemd service {{ business_group }} on host {{ ansible_hostname }} is {{ operation }} at {{ lookup('pipe', 'date +%Y-%m-%d_%H-%M-%S') }}."
+        subtype: html
+        body: |
+          <html>
+          <body style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2 style="color: #007bff;">🔔 Service Notification</h2>
+            <p><strong>Business Group:</strong> {{ business_group }}</p>
+            <p><strong>Environment:</strong> {{ hostname_bg.split('_')[0] }}</p>
+            <p><strong>Hostname:</strong> {{ hostname_bg.split('_')[1] }}</p>
+            {% if operation == "stopped" %}
+              <p style="color: red;"><strong>Status:</strong> The service is <em>{{ operation }}</em></p>
+            {% elif operation == "started" or operation == "running" %}
+              <p style="color: green;"><strong>Status:</strong> The service is <em>{{ operation }}</em></p>
+            {% elif operation == "restarted" %}
+              <p style="color: orange;"><strong>Status:</strong> The service is <em>{{ operation }}</em></p>
+            {% else %}
+              <p style="color: gray;"><strong>Status:</strong> The service is in an unknown state (<em>{{ operation }}</em>)</p>
+            {% endif %}
+            <p><strong>Timestamp:</strong> {{ lookup('pipe', 'date +%Y-%m-%d %H:%M:%S') }}</p>
+            <hr>
+            <p style="font-size: 12px; color: gray;">This is an automated message from Ansible.</p>
+          </body>
+          </html>
       delegate_to: localhost
 
     - name: Runtime for {{ business_group }} {{ operation }}
-      ansible.builtin.systemd_service:
+      ansible.builtin.service:
         state: "{{ operation }}"
-        name: "mule.{{ business_group }}"
+        name: mule.{{ business_group }}
       register: service_status
 
     - name: Status of the {{ business_group }}
