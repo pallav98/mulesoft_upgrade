@@ -1,0 +1,75 @@
+---
+- name: Install MuleSoft Runtime and Start Services
+  hosts: all
+  become: true
+  vars:
+    mule_version: "4.9.3"
+    mule_base_dir: "/opt/mulesoft/runtime"
+    mule_services:
+      - external-service
+      - digital-service
+      - teller-service
+      - abcs-service
+    binary_url: "http://10.220.36.44/pub/.tools/mule-ee-distribution-{{ mule_version }}.tar.gz"
+    download_path: "/tmp/mule-ee-{{ mule_version }}.tar.gz"
+    mule_user_top: "muleins"
+    mule_group_top: "mulesvc"
+    mule_user_inner: "muleins"
+    mule_group_inner: "muleins"
+
+  tasks:
+
+    - name: Ensure /opt/mulesoft directory exists with top-level permissions
+      file:
+        path: "/opt/mulesoft"
+        state: directory
+        owner: "{{ mule_user_top }}"
+        group: "{{ mule_group_top }}"
+        mode: '0755'
+
+    - name: Create base MuleSoft runtime directory
+      file:
+        path: "{{ mule_base_dir }}"
+        state: directory
+        owner: "{{ mule_user_top }}"
+        group: "{{ mule_group_top }}"
+        mode: '0755'
+
+    - name: Create MuleSoft version directory
+      file:
+        path: "{{ mule_base_dir }}/{{ mule_version }}"
+        state: directory
+        owner: "{{ mule_user_inner }}"
+        group: "{{ mule_group_inner }}"
+        mode: '0755'
+
+    - name: Download MuleSoft binary
+      get_url:
+        url: "{{ binary_url }}"
+        dest: "{{ download_path }}"
+        mode: '0644'
+
+    - name: Extract MuleSoft binary for each service group
+      unarchive:
+        src: "{{ download_path }}"
+        dest: "{{ mule_base_dir }}/{{ mule_version }}/{{ item }}"
+        remote_src: yes
+        owner: "{{ mule_user_inner }}"
+        group: "{{ mule_group_inner }}"
+      loop: "{{ mule_services }}"
+
+    - name: Copy environment-specific MuleSoft license file
+      copy:
+        src: "files/{{ ansible_environment }}-license.lic"
+        dest: "{{ mule_base_dir }}/{{ mule_version }}/{{ item }}/conf/license.lic"
+        owner: "{{ mule_user_inner }}"
+        group: "{{ mule_group_inner }}"
+        mode: '0644'
+      loop: "{{ mule_services }}"
+      when: ansible_environment in ['prod', 'non-prod']
+
+    - name: Start Mule application for each business group
+      shell: "/apps/mulesoft/runtime/{{ mule_version }}/{{ item }}/bin/mule start"
+      args:
+        executable: /bin/bash
+      loop: "{{ mule_services }}"
