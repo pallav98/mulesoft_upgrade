@@ -57,23 +57,31 @@
         group: "{{ mule_group_inner }}"
         mode: '0755'
 
-    - name: Download and extract MuleSoft binary in one step
-      shell: |
-        mkdir -p "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}" && \
-        if [ ! -d "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin" ]; then
-          wget -O "{{ download_path }}" "{{ binary_url }}" && \
-          unzip -q "{{ download_path }}" -d "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}"
-        fi
-      args:
-        executable: /bin/bash
+   - name: Download and extract MuleSoft binary in one step
+    shell: |
+      mkdir -p "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}" && \
+      if [ ! -d "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin" ]; then
+        wget -O "{{ download_path }}" "{{ binary_url }}" && \
+        unzip -q -j "{{ download_path }}" -d "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}" && \
+        chown -R "{{ mule_user_inner }}:{{ mule_group_inner }}" "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}"
+      fi
+    args:
+      executable: /bin/bash
+
 
     - name: Copy environment-specific MuleSoft license using shell cp
       shell: |
-        cp "/opt/mulesoft/licenses/{{ license_type }}-license.lic" "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/conf/license.lic"
+        cp "/opt/mulesoft/licenses/{{ license_type }}-license.lic" "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin/license.lic" && \
+        chown -R "{{ mule_user_inner }}:{{ mule_group_inner }}" "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin/license.lic"
       args:
         executable: /bin/bash
 
-    - name: Start MuleSoft application
-      shell: "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin/mule start"
+    - name: Install MuleSoft license
+      shell: "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin/mule installLicense {{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin/license.lic"
+      args:
+        executable: /bin/bash
+
+    - name: Verify MuleSoft license
+      shell: "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin/mule verifyLicense {{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin/license.lic"
       args:
         executable: /bin/bash
