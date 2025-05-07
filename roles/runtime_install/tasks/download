@@ -7,3 +7,10 @@
     fi
   args:
     executable: /bin/bash
+
+
+- name: Copy environment-specific MuleSoft license using shell
+  shell: |
+    cp "files/{{ license_type }}-license.lic" "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/conf/license.lic"
+  args:
+    executable: /bin/bash
