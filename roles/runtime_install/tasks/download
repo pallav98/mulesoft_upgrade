@@ -1,0 +1,5 @@
+    - name: Download MuleSoft binary using wget
+      shell: |
+        wget -O "{{ download_path }}" "{{ binary_url }}"
+      args:
+        creates: "{{ download_path }}"
