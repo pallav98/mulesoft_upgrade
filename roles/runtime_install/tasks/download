@@ -1,5 +1,9 @@
-    - name: Download MuleSoft binary using wget
-      shell: |
-        wget -O "{{ download_path }}" "{{ binary_url }}"
-      args:
-        creates: "{{ download_path }}"
+- name: Download and extract MuleSoft binary in one step
+  shell: |
+    mkdir -p "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}" && \
+    if [ ! -d "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin" ]; then
+      wget -O "{{ download_path }}" "{{ binary_url }}" && \
+      unzip -q "{{ download_path }}" -d "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}"
+    fi
+  args:
+    executable: /bin/bash
