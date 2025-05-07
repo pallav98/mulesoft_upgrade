@@ -1,6 +1,6 @@
 ---
-- name: Install MuleSoft Runtime and Start Services
-  hosts: all
+- name: Deploy MuleSoft Based on Tower Input
+  hosts: "{{ parsed_host }}"
   become: true
   vars:
     mule_version: "4.9.3"
@@ -8,11 +8,6 @@
     mule_base_dir: "/apps/mulesoft"
     mule_runtime_dir: "/apps/mulesoft/runtime"
     mule_scripts_dir: "/apps/mulesoft/scripts"
-    mule_services:
-      - external-service
-      - digital-service
-      - teller-service
-      - abcs-service
     binary_url: "http://10.220.36.44/pub/.tools/mule-ee-distribution-{{ mule_version }}.tar.gz"
     binary_file: "mule-ee-distribution-{{ mule_version }}.tar.gz"
     download_path: "{{ mule_scripts_dir }}/{{ binary_file }}"
@@ -21,9 +16,16 @@
     mule_user_inner: "muleins"
     mule_group_inner: "muleins"
 
+    # Parse string like "prod_External_pwlvs01mul001"
+    parts: "{{ env_businessgroup_hostname.split('_') }}"
+    parsed_env: "{{ parts[0] }}"
+    parsed_group: "{{ parts[1] | lower }}-service"
+    parsed_host: "{{ parts[2] }}"
+    license_type: "{{ 'prod' if parsed_env in ['prod', 'dr'] else 'non-prod' }}"
+
   tasks:
 
-    - name: Create /apps directory (root:root)
+    - name: Ensure /apps directory (root:root)
       file:
         path: "{{ mule_root_dir }}"
         state: directory
@@ -31,7 +33,7 @@
         group: root
         mode: '0755'
 
-    - name: Create /apps/mulesoft directory (muleins:mulesvc)
+    - name: Create /apps/mulesoft (muleins:mulesvc)
       file:
         path: "{{ mule_base_dir }}"
         state: directory
@@ -39,7 +41,7 @@
         group: "{{ mule_group_top }}"
         mode: '0755'
 
-    - name: Create /apps/mulesoft/runtime directory (muleins:muleins)
+    - name: Create /apps/mulesoft/runtime (muleins:muleins)
       file:
         path: "{{ mule_runtime_dir }}"
         state: directory
@@ -47,7 +49,7 @@
         group: "{{ mule_group_inner }}"
         mode: '0755'
 
-    - name: Create /apps/mulesoft/scripts directory (muleins:muleins)
+    - name: Create /apps/mulesoft/scripts (muleins:muleins)
       file:
         path: "{{ mule_scripts_dir }}"
         state: directory
@@ -55,7 +57,7 @@
         group: "{{ mule_group_inner }}"
         mode: '0755'
 
-    - name: Download MuleSoft binary into scripts directory
+    - name: Download MuleSoft binary
       get_url:
         url: "{{ binary_url }}"
         dest: "{{ download_path }}"
@@ -63,27 +65,23 @@
         owner: "{{ mule_user_inner }}"
         group: "{{ mule_group_inner }}"
 
-    - name: Extract MuleSoft binary for each service
+    - name: Extract MuleSoft binary for business group
       unarchive:
         src: "{{ download_path }}"
-        dest: "{{ mule_runtime_dir }}/{{ mule_version }}/{{ item }}"
+        dest: "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}"
         remote_src: yes
         owner: "{{ mule_user_inner }}"
-        group: "{{ mule_group_inner }}"
-      loop: "{{ mule_services }}"
+        group: "{{ mule_user_inner }}"
 
-    - name: Copy environment-specific MuleSoft license file
+    - name: Upload environment-specific license
       copy:
-        src: "files/{{ ansible_environment }}-license.lic"
-        dest: "{{ mule_runtime_dir }}/{{ mule_version }}/{{ item }}/conf/license.lic"
+        src: "files/{{ license_type }}-license.lic"
+        dest: "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/conf/license.lic"
         owner: "{{ mule_user_inner }}"
-        group: "{{ mule_group_inner }}"
+        group: "{{ mule_user_inner }}"
         mode: '0644'
-      loop: "{{ mule_services }}"
-      when: ansible_environment in ['prod', 'non-prod']
 
-    - name: Start Mule application for each business group
-      shell: "{{ mule_runtime_dir }}/{{ mule_version }}/{{ item }}/bin/mule start"
+    - name: Start MuleSoft
+      shell: "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin/mule start"
       args:
         executable: /bin/bash
-      loop: "{{ mule_services }}"
