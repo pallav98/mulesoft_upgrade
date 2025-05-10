@@ -1,11 +1,29 @@
 - name: Download and extract MuleSoft binary in one step
   shell: |
-    mkdir -p "{{ mule_runtime_dir }}/{{ mule_version }}" && \
-    if [ ! -d "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin" ]; then
-      wget -O "{{ download_path }}" "{{ binary_url }}" && \
-      unzip -q "{{ download_path }}" -d "{{ mule_runtime_dir }}/{{ mule_version }}" && \
-      mv "{{ mule_runtime_dir }}/{{ mule_version }}/mule-enterprise-standalone-{{ mule_version }}-{{ parsed_group }}" "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}" && \
-      chown -R "{{ mule_user_inner }}:{{ mule_group_inner }}" "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}"
+    set -e
+    target_dir="{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}"
+    version_dir="{{ mule_runtime_dir }}/{{ mule_version }}"
+    extracted_dir="$version_dir/mule-ee-distribution-{{ mule_version }}-20240619"
+
+    mkdir -p "$target_dir"
+
+    if [ ! -d "$target_dir/bin" ]; then
+      echo "[INFO] Downloading binary..."
+      wget -O "{{ download_path }}" "{{ binary_url }}"
+
+      echo "[INFO] Unzipping binary..."
+      unzip -q "{{ download_path }}" -d "$version_dir"
+
+      echo "[INFO] Removing zip file..."
+      rm -f "{{ download_path }}"
+
+      echo "[INFO] Renaming extracted directory..."
+      mv "$extracted_dir" "$target_dir"
+
+      echo "[INFO] Fixing ownership..."
+      chown -R "{{ mule_user_inner }}:{{ mule_group_inner }}" "$target_dir"
+    else
+      echo "[INFO] MuleSoft already extracted. Skipping."
     fi
   args:
     executable: /bin/bash
