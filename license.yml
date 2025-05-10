@@ -1,0 +1,7 @@
+- name: Copy environment-specific MuleSoft license using ansible.builtin.copy
+  ansible.builtin.copy:
+    src: "files/{{ license_type }}-license.lic"
+    dest: "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin/license.lic"
+    owner: "{{ mule_user_inner }}"
+    group: "{{ mule_user_inner }}"
+    mode: '0644'
