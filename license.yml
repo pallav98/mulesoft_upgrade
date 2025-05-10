@@ -5,3 +5,18 @@
     owner: "{{ mule_user_inner }}"
     group: "{{ mule_user_inner }}"
     mode: '0644'
+
+- name: Install MuleSoft license
+  shell: |
+    "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin/mule" -installLicense \
+    "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin/license.lic"
+  args:
+    executable: /bin/bash
+
+- name: Verify MuleSoft license
+  shell: |
+    "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin/mule" -verifyLicense \
+    "{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}/bin/license.lic"
+  args:
+    executable: /bin/bash
+
