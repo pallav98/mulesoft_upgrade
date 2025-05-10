@@ -1,29 +1,46 @@
-- name: Download and extract MuleSoft binary in one step
+- name: Download and extract MuleSoft binary in one step with logging
   shell: |
-    set -e
-    target_dir="{{ mule_runtime_dir }}/{{ mule_version }}/{{ parsed_group }}"
-    version_dir="{{ mule_runtime_dir }}/{{ mule_version }}"
-    extracted_dir="$version_dir/mule-ee-distribution-{{ mule_version }}-20240619"
+    set -euo pipefail
 
+    LOGFILE="/tmp/mule_install.log"
+    exec >> "$LOGFILE" 2>&1
+
+    echo "[INFO] Starting MuleSoft install at $(date)"
+
+    version_dir="{{ mule_runtime_dir }}/{{ mule_version }}"
+    target_dir="$version_dir/{{ parsed_group }}"
+    zip_file="{{ download_path }}"
+
+    echo "[INFO] Creating target directory..."
     mkdir -p "$target_dir"
 
     if [ ! -d "$target_dir/bin" ]; then
       echo "[INFO] Downloading binary..."
-      wget -O "{{ download_path }}" "{{ binary_url }}"
+      wget -O "$zip_file" "{{ binary_url }}"
 
       echo "[INFO] Unzipping binary..."
-      unzip -q "{{ download_path }}" -d "$version_dir"
+      unzip -q -o "$zip_file" -d "$version_dir"
 
       echo "[INFO] Removing zip file..."
-      rm -f "{{ download_path }}"
+      rm -f "$zip_file"
 
-      echo "[INFO] Renaming extracted directory..."
+      echo "[INFO] Detecting extracted folder..."
+      extracted_dir=$(find "$version_dir" -maxdepth 1 -type d -name "mule-enterprise-standalone*" | head -n 1)
+
+      if [ -z "$extracted_dir" ] || [ ! -d "$extracted_dir" ]; then
+        echo "[ERROR] Extracted MuleSoft directory not found!" >&2
+        exit 1
+      fi
+
+      echo "[INFO] Moving extracted folder to $target_dir..."
       mv "$extracted_dir" "$target_dir"
 
-      echo "[INFO] Fixing ownership..."
+      echo "[INFO] Setting correct ownership..."
       chown -R "{{ mule_user_inner }}:{{ mule_group_inner }}" "$target_dir"
     else
-      echo "[INFO] MuleSoft already extracted. Skipping."
+      echo "[INFO] MuleSoft already installed at $target_dir. Skipping."
     fi
+
+    echo "[INFO] MuleSoft install completed at $(date)"
   args:
     executable: /bin/bash
